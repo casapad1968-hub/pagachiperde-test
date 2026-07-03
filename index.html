@@ -9,95 +9,116 @@
 <title>Il circolo degli ex — Mondiali 2026</title>
 <style>
   :root {
-    --bg: #0a0e1a;
-    --surface: #131a2e;
-    --surface2: #1b2640;
-    --border: #1e3050;
+    --bg: #0f1219;
+    --surface: #161b26;
+    --surface2: #1e2538;
+    --border: #2a3347;
     --gold: #f59e0b;
     --gold-light: #fbbf24;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
+    --text: #e8edf5;
+    --muted: #8892a8;
     --green: #4ade80;
     --red: #f87171;
+    --card-bg: #1a202f;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background: url(/bg.jpg) center/cover fixed; color: var(--text); min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; position:relative; }
-  body::before { content:''; position:fixed; inset:0; z-index:-1; background: rgba(10,14,26,0.65); }
-  body::after { content:''; position:fixed; inset:0; z-index:-1; background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='40,0 77.3,20 77.3,60 40,80 2.7,60 2.7,20' fill='none' stroke='rgba(245,158,11,0.04)' stroke-width='0.5'/%3E%3C/svg%3E"); background-size:80px 80px; opacity:0.5; }
-  .header { background: rgba(10,14,26,0.85); backdrop-filter: blur(10px); border-bottom: 2px solid var(--gold); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:50; } padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .header h1 { font-size: 1.2em; color: var(--gold); font-weight: 800; letter-spacing: -0.5px; }
-  .header h1 small { color: var(--muted); font-weight: 400; font-size: 0.65em; display: block; }
-  .header-links { display: flex; gap: 6px; align-items: center; }
-  .header-links a, .header-links button { color: #94a3b8; text-decoration: none; padding: 5px 10px; border-radius: 6px; font-size: 0.8em; border: 1px solid var(--border); background: transparent; cursor: pointer; transition: all 0.15s; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:50; }
+  .header h1 { font-size: 1.1em; color: var(--text); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .header h1 img { height: 32px; }
+  .header h1 small { color: var(--muted); font-weight: 400; font-size: 0.7em; }
+  .header-links { display: flex; gap: 4px; align-items: center; }
+  .header-links a, .header-links button { color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8em; border: none; background: transparent; cursor: pointer; transition: all 0.15s; font-weight: 500; }
   .header-links a:hover, .header-links button:hover { background: var(--surface2); color: var(--text); }
-  .login-btn { background: var(--gold) !important; color: #0a0e1a !important; border-color: var(--gold) !important; font-weight: 700; }
-  .logout-btn { background: transparent; border-color: var(--red); color: #fca5a5; }
+  .login-btn { background: var(--gold) !important; color: #0f1219 !important; font-weight: 700 !important; }
+  .logout-btn { background: transparent; border: 1px solid var(--red); color: var(--red); }
 
-  .container { max-width: 960px; margin: 0 auto; padding: 14px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 16px; }
 
   /* ============= LOGIN OVERLAY ============= */
-  .login-overlay { display: none; position: fixed; inset:0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index:100; justify-content:center; align-items:center; }
+  .login-overlay { display: none; position: fixed; inset:0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index:100; justify-content:center; align-items:center; }
   .login-overlay.active { display: flex; }
-  .login-box { background: var(--surface); padding: 36px 32px; border-radius: 20px; width: 90%; max-width: 360px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-  .login-box h2 { text-align: center; margin-bottom: 24px; color: var(--gold); font-size: 1.4em; }
-  .login-box input { width:100%; padding:12px 14px; margin-bottom: 12px; border:1px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); font-size:1em; transition: border-color 0.2s; }
+  .login-box { background: var(--surface); padding: 32px; border-radius: 16px; width: 90%; max-width: 340px; border: 1px solid var(--border); }
+  .login-box h2 { text-align: center; margin-bottom: 20px; color: var(--text); font-size: 1.2em; }
+  .login-box input { width:100%; padding:10px 12px; margin-bottom: 10px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); font-size:0.95em; }
   .login-box input:focus { outline: none; border-color: var(--gold); }
-  .login-box .error { color: #f87171; font-size: 0.85em; text-align:center; margin-bottom: 12px; display: none; }
-  .login-box button { width:100%; padding:12px; background:var(--gold); color:#0a0e1a; border:none; border-radius:10px; font-weight:700; font-size:1em; cursor:pointer; transition: transform 0.1s; }
-  .login-box button:active { transform: scale(0.98); }
+  .login-box .error { color: var(--red); font-size: 0.85em; text-align:center; margin-bottom: 10px; display: none; }
+  .login-box button { width:100%; padding:10px; background:var(--gold); color:#0f1219; border:none; border-radius:8px; font-weight:700; font-size:0.95em; cursor:pointer; }
 
   /* ============= TABS ============= */
-  .tabs { display: flex; gap: 3px; margin-bottom: 14px; background: var(--surface); border-radius: 12px; padding: 3px; overflow-x: auto; }
-  .tab { flex:1; text-align:center; padding:10px; border-radius:9px; cursor:pointer; font-weight:600; color:var(--muted); font-size:0.85em; white-space:nowrap; transition:all 0.2s; }
+  .tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface); border-radius: 10px; padding: 3px; overflow-x: auto; }
+  .tab { flex:1; text-align:center; padding:8px 6px; border-radius:8px; cursor:pointer; font-weight:500; color:var(--muted); font-size:0.82em; white-space:nowrap; transition:all 0.2s; }
   .tab:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.03); }
-  .tab.active { background:var(--gold); color:#0a0e1a; box-shadow: 0 2px 15px rgba(245,158,11,0.4); }
+  .tab.active { background:var(--gold); color:#0f1219; font-weight:700; }
 
-  /* ============= MATCH CARDS ============= */
-  .match-card { background: rgba(19,26,46,0.85); backdrop-filter: blur(6px); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; transition: all 0.25s; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-  .match-card:hover { border-color: rgba(245,158,11,0.3); box-shadow: 0 4px 30px rgba(245,158,11,0.08), inset 0 0 20px rgba(245,158,11,0.02); }
-  .match-card:hover { border-color: #2a4070; }
-  .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .match-date { font-size: 0.78em; color: var(--muted); }
-  .match-gruppo { background: var(--surface2); padding: 2px 10px; border-radius: 20px; font-size: 0.72em; color: var(--muted); font-weight: 700; letter-spacing: 0.3px; }
+  /* ============= MATCH CARDS - NEW CLEAN STYLE ============= */
+  .match-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; transition: border-color 0.2s; }
+  .match-card:hover { border-color: rgba(245,158,11,0.25); }
+  .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .match-id { color: var(--muted); font-size: 0.75em; font-weight: 500; }
+  .match-gruppo { background: var(--surface2); padding: 3px 10px; border-radius: 6px; font-size: 0.7em; color: var(--muted); font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
 
-  .match-teams { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .match-team { display: flex; align-items: center; gap: 8px; flex:1; font-size: 1em; font-weight: 600; }
-  .match-team.away { justify-content: flex-end; text-align: right; }
-  .match-vs { color: var(--muted); font-size: 0.85em; font-weight: 600; }
+  /* Teams row - clean two-column layout */
+  .match-teams { display: flex; align-items: center; gap: 0; }
+  .match-team-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .match-team-row { display: flex; align-items: center; gap: 10px; }
+  .match-team-row.away { justify-content: flex-end; text-align: right; flex-direction: row-reverse; }
+  .match-team-flag { font-size: 1.3em; line-height: 1; flex-shrink: 0; }
+  .match-team-name { font-size: 0.95em; font-weight: 600; color: var(--text); }
+  .match-vs-col { width: 50px; text-align: center; flex-shrink: 0; }
+  .match-vs-col .vs-line { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .match-vs-col .vs-line .line { width: 1px; height: 8px; background: var(--border); }
+  .match-vs-col .vs-line .vs-text { color: var(--muted); font-size: 0.75em; font-weight: 600; }
+  .match-vs-col .vs-line .line2 { width: 1px; height: 8px; background: var(--border); }
 
-  .match-score { display: none; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; }
+  /* Score display */
+  .match-score { display: none; align-items: center; justify-content: center; gap: 16px; margin: 12px 0 4px; }
   .match-score.show { display: flex; }
-  .match-score .score-num { font-size: 2em; font-weight: 900; color: var(--gold); }
-  .match-score .score-sep { color: var(--muted); font-weight: 700; font-size: 1.2em; }
+  .match-score .score-num { font-size: 1.8em; font-weight: 800; color: var(--gold); }
+  .match-score .score-sep { color: var(--muted); font-weight: 600; font-size: 1.1em; }
+  .match-score .score-team { font-size: 0.85em; font-weight: 600; color: var(--muted); }
 
-  .match-played-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(34,197,94,0.12); color: var(--green); padding: 3px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 600; }
+  .match-played-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(34,197,94,0.1); color: var(--green); padding: 3px 10px; border-radius: 6px; font-size: 0.72em; font-weight: 600; }
+
+  /* Kickoff time bar */
+  .match-kickoff { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 0; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+  .match-kickoff .icon { font-size: 0.85em; }
+  .match-kickoff .time { font-size: 0.85em; font-weight: 600; color: var(--muted); }
+
+  /* Live score box */
+  .live-score-box { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; padding: 8px 14px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; }
+  .live-score-box .pulse-dot { display: inline-block; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; animation: pulse 1.2s infinite; }
+  .live-score-box .live-label { font-size: 0.8em; font-weight: 700; color: #fff; }
+  .live-score-box .live-score-num { font-size: 1em; font-weight: 800; color: var(--gold-light); }
+  .live-score-box .live-minute { font-size: 0.72em; color: var(--muted); }
+  .live-score-box .live-btn { font-size: 0.78em; color: #fff; text-decoration: none; font-weight: 700; background: linear-gradient(135deg,#ef4444,#dc2626); padding: 4px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; }
 
   /* Prediction form */
-  .prediction-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .prediction-form input { width: 48px; padding: 8px; text-align: center; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 1.05em; font-weight: 700; transition: border-color 0.2s; }
+  .prediction-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .prediction-form input { width: 44px; padding: 6px; text-align: center; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 1em; font-weight: 700; }
   .prediction-form input:focus { outline: none; border-color: var(--gold); }
-  .prediction-form .vs { color: var(--muted); font-weight: 700; }
-  .prediction-form button { padding: 8px 18px; background: var(--gold); color: #0a0e1a; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9em; transition: all 0.15s; }
+  .prediction-form .vs { color: var(--muted); font-weight: 600; font-size: 0.9em; }
+  .prediction-form button { padding: 6px 16px; background: var(--gold); color: #0f1219; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85em; }
   .prediction-form button:hover { background: var(--gold-light); }
   .prediction-form button:disabled { opacity: 0.4; cursor: not-allowed; }
-  .prediction-form .saved { color: var(--green); font-size: 0.85em; font-weight: 600; animation: fadeIn 0.3s; }
-  .prediction-form .my-pred-label { color: var(--green); font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .prediction-form .saved { color: var(--green); font-size: 0.82em; font-weight: 600; animation: fadeIn 0.3s; }
+  .prediction-form .my-pred-label { color: var(--green); font-size: 0.82em; font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
   @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
 
   /* Others' predictions */
   .others-predictions { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-  .others-predictions .title { font-size: 0.75em; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .others-predictions .title { font-size: 0.72em; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
   .others-grid { display: flex; flex-wrap: wrap; gap: 4px; }
-  .other-pred { display: inline-flex; align-items: center; gap: 4px; background: var(--surface2); padding: 3px 10px; border-radius: 20px; font-size: 0.78em; }
-  .other-pred .avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--gold); color: #0a0e1a; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: 800; }
-  .other-pred .name { color: #94a3b8; }
+  .other-pred { display: inline-flex; align-items: center; gap: 4px; background: var(--surface2); padding: 3px 10px; border-radius: 6px; font-size: 0.75em; }
+  .other-pred .avatar { width: 18px; height: 18px; border-radius: 50%; background: var(--gold); color: #0f1219; display: inline-flex; align-items: center; justify-content: center; font-size: 0.65em; font-weight: 800; }
+  .other-pred .name { color: var(--muted); }
   .other-pred .pred { color: var(--gold); font-weight: 700; }
 
   /* ============= CLASSIFICA ============= */
   .ranking-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-  .ranking-table th { text-align: left; padding: 12px 14px; background: var(--surface); color: var(--muted); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
-  .ranking-table td { padding: 12px 14px; border-bottom: 1px solid rgba(30,48,80,0.4); }
+  .ranking-table th { text-align: left; padding: 10px 12px; background: var(--surface); color: var(--muted); font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  .ranking-table td { padding: 10px 12px; border-bottom: 1px solid rgba(42,51,71,0.4); }
   .ranking-table tr:last-child td { border-bottom: none; }
   .ranking-table .pos { width: 36px; font-weight: 800; text-align: center; font-size: 1.1em; }
   .rank-1 { background: linear-gradient(90deg, rgba(245,158,11,0.08), transparent); }
@@ -142,11 +163,14 @@
 
   /* Responsive */
   @media (max-width: 600px) {
-    .header h1 { font-size: 1em; }
+    .header h1 { font-size: 0.95em; }
     .header h1 small { display: inline; font-size: 0.6em; }
-    .tabs { font-size: 0.78em; }
-    .match-team { font-size: 0.9em; }
-    .match-score .score-num { font-size: 1.6em; }
+    .header h1 img { height: 26px; }
+    .tabs { font-size: 0.75em; }
+    .match-team-name { font-size: 0.85em; }
+    .match-team-flag { font-size: 1.1em; }
+    .match-vs-col { width: 36px; }
+    .match-score .score-num { font-size: 1.4em; }
     .my-pred-card { flex-direction: column; text-align: center; }
   }
 </style>
@@ -401,58 +425,82 @@ function renderPartiteWithLive(content, liveData) {
 
     html += '<div class="match-card" id="match-' + m.id + '">';
     html += '<div class="match-header">';
-    html += '<span class="match-id" style="color:var(--muted);font-size:0.8em;font-weight:600;">#' + m.id + '</span>';
+    html += '<span class="match-id">#' + m.id + '</span>';
     var faseLabel = m.phase === 'round_of_16' ? 'Ottavi' : (m.phase === 'round_of_32' ? 'Sedicesimi' : 'Girone ' + m.group_name);
     html += '<span class="match-gruppo">' + faseLabel + '</span>';
     html += '</div>';
 
-    // Orario italiano
+    // Nuovo layout: due colonne squadre con bandierine + data/ora a destra
+    html += '<div class="match-teams">';
+    
+    // Colonna squadre (sinistra)
+    html += '<div class="match-team-col">';
+    html += '<div class="match-team-row">';
+    html += '<span class="match-team-flag">' + flagOnly(m.home_team) + '</span>';
+    html += '<span class="match-team-name">' + teamName(m.home_team) + '</span>';
+    html += '</div>';
+    html += '<div class="match-team-row away">';
+    html += '<span class="match-team-flag">' + flagOnly(m.away_team) + '</span>';
+    html += '<span class="match-team-name">' + teamName(m.away_team) + '</span>';
+    html += '</div>';
+    html += '</div>';
+    
+    // Colonna VS
+    html += '<div class="match-vs-col">';
+    html += '<div class="vs-line">';
+    html += '<div class="line"></div>';
+    html += '<span class="vs-text">VS</span>';
+    html += '<div class="line2"></div>';
+    html += '</div>';
+    html += '</div>';
+    
+    // Colonna data/ora (destra)
+    html += '<div class="match-team-col" style="text-align:right;">';
     if (m.kickoff) {
       var kickoffDate = new Date(m.kickoff.replace(' ', 'T') + ':00+02:00');
-      var oraIta = kickoffDate.toLocaleString('it-IT', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', timeZone:'Europe/Rome'});
-      html += '<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 4px 0;padding:6px 12px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">';
-      html += '<span style="font-size:0.85em;color:#94a3b8;">📅</span>';
-      html += '<span style="font-size:0.9em;font-weight:700;color:#e2e8f0;">' + oraIta + '</span>';
-      html += '</div>';
+      var giornoSett = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'][kickoffDate.getUTCDay()];
+      var giornoNum = kickoffDate.getUTCDate().toString().padStart(2,'0');
+      var meseNum = (kickoffDate.getUTCMonth()+1).toString().padStart(2,'0');
+      var ora = kickoffDate.getUTCHours().toString().padStart(2,'0');
+      var min = kickoffDate.getUTCMinutes().toString().padStart(2,'0');
+      html += '<div style="font-size:0.82em;font-weight:600;color:var(--muted);">' + giornoSett + ' ' + giornoNum + '/' + meseNum + '</div>';
+      html += '<div style="font-size:1.1em;font-weight:700;color:var(--text);margin-top:2px;">' + ora + ':' + min + '</div>';
     }
+    html += '</div>';
+    
+    html += '</div>'; // chiudi match-teams
 
+    // Se giocata, mostra risultato
     if (isPlayed) {
       html += '<div class="match-score show">';
-      html += '<div class="match-team" style="flex:1;font-weight:700;">' + teamName(m.home_team) + '</div>';
+      html += '<span class="score-team">' + teamName(m.home_team) + '</span>';
       html += '<span class="score-num">' + m.home_score + '</span>';
       html += '<span class="score-sep">-</span>';
       html += '<span class="score-num">' + m.away_score + '</span>';
-      html += '<div class="match-team away" style="flex:1;font-weight:700;">' + teamName(m.away_team) + '</div>';
+      html += '<span class="score-team">' + teamName(m.away_team) + '</span>';
       html += '</div>';
-      html += '<div><span class="match-played-badge">✅ Giocata</span></div>';
-      // Highlights YouTube link
+      html += '<div style="text-align:center;"><span class="match-played-badge">✅ Giocata</span></div>';
       var hlQuery = encodeURIComponent(m.home_team + ' ' + m.away_team + ' highlights mondiali 2026');
       html += '<div style="text-align:center;margin-top:6px;">';
-      html += '<a href="https://www.youtube.com/results?search_query=' + hlQuery + '" target="_blank" style="font-size:0.78em;color:#fff;text-decoration:none;font-weight:600;background:#ff0000;padding:4px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;"><span style="font-size:1.1em;">▶</span> Highlights</a>';
+      html += '<a href="https://www.youtube.com/results?search_query=' + hlQuery + '" target="_blank" style="font-size:0.75em;color:#fff;text-decoration:none;font-weight:600;background:#ff0000;padding:3px 10px;border-radius:5px;display:inline-flex;align-items:center;gap:4px;"><span style="font-size:1em;">▶</span> Highlights</a>';
       html += '</div>';
-    } else {
-      html += '<div class="match-teams">';
-      html += '<div class="match-team">' + teamName(m.home_team) + '</div>';
-      html += '<div class="match-vs">VS</div>';
-      html += '<div class="match-team away">' + teamName(m.away_team) + '</div>';
+    }
+    
+    // Live score
+    if (!isPlayed && isStarted) {
+      var liveQuery = encodeURIComponent(m.home_team + ' ' + m.away_team + ' mondiali 2026');
+      var liveKey = m.home_team + '|||' + m.away_team;
+      var liveInfo = liveByTeam[liveKey];
+      var scoreText = liveInfo ? (liveInfo.homeScore + ' - ' + liveInfo.awayScore) : '-';
+      var minuteText = liveInfo ? (liveInfo.minute + ' · ' + liveInfo.period) : '';
+      
+      html += '<div class="live-score-box">';
+      html += '<span class="pulse-dot"></span>';
+      html += '<span class="live-label">IN CORSO</span>';
+      html += '<span class="live-score-num">' + scoreText + '</span>';
+      html += '<span class="live-minute">' + minuteText + '</span>';
+      html += '<a href="https://www.google.com/search?q=' + liveQuery + '" target="_blank" class="live-btn">🔴 LIVE</a>';
       html += '</div>';
-      if (isStarted) {
-        var liveQuery = encodeURIComponent(m.home_team + ' ' + m.away_team + ' mondiali 2026');
-        
-        // Check if we have live score data
-        var liveKey = m.home_team + '|||' + m.away_team;
-        var liveInfo = liveByTeam[liveKey];
-        var scoreText = liveInfo ? (liveInfo.homeScore + ' - ' + liveInfo.awayScore) : '-';
-        var minuteText = liveInfo ? (liveInfo.minute + ' · ' + liveInfo.period) : '';
-        
-        html += '<div class="live-score-box" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;padding:8px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;">';
-        html += '<span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;animation:pulse 1.2s infinite;box-shadow:0 0 8px rgba(239,68,68,0.6);"></span>';
-        html += '<span style="font-size:0.85em;font-weight:700;color:#fff;">IN CORSO</span>';
-        html += '<span class="live-score-num" style="font-size:1.1em;font-weight:800;color:#fbbf24;">' + scoreText + '</span>';
-        html += '<span class="live-minute" style="font-size:0.75em;color:#94a3b8;">' + minuteText + '</span>';
-        html += '<a href="https://www.google.com/search?q=' + liveQuery + '" target="_blank" style="font-size:0.82em;color:#fff;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#ef4444,#dc2626);padding:5px 14px;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">🔴 LIVE</a>';
-        html += '</div>';
-      }
     }
 
     // Prediction form
@@ -461,9 +509,9 @@ function renderPartiteWithLive(content, liveData) {
       if (myPred) {
         html += '<span class="my-pred-label">✔ ' + myPred.home_pred + '-' + myPred.away_pred + '</span>';
       }
-      html += '<input type="number" min="0" max="20" value="' + (myPred ? myPred.home_pred : '') + '" placeholder="0" id="hp-' + m.id + '" style="width:48px">';
+      html += '<input type="number" min="0" max="20" value="' + (myPred ? myPred.home_pred : '') + '" placeholder="0" id="hp-' + m.id + '">';
       html += '<span class="vs">:</span>';
-      html += '<input type="number" min="0" max="20" value="' + (myPred ? myPred.away_pred : '') + '" placeholder="0" id="ap-' + m.id + '" style="width:48px">';
+      html += '<input type="number" min="0" max="20" value="' + (myPred ? myPred.away_pred : '') + '" placeholder="0" id="ap-' + m.id + '">';
       html += '<button onclick="submitPred(' + m.id + ')">' + (myPred ? '✏️ Modifica' : '⚡ Pronostica') + '</button>';
       html += '<span id="saved-' + m.id + '" class="saved"></span>';
       html += '</div>';
@@ -713,11 +761,11 @@ function renderRisultati(content) {
 
     // Risultato finale
     html += '<div class="match-score show" style="margin-bottom:4px;">';
-    html += '<div class="match-team" style="flex:1;font-weight:700;">' + teamName(m.home_team) + '</div>';
-    html += '<span class="score-num" style="font-size:2.4em;">' + m.home_score + '</span>';
-    html += '<span class="score-sep" style="font-size:1.4em;">-</span>';
-    html += '<span class="score-num" style="font-size:2.4em;">' + m.away_score + '</span>';
-    html += '<div class="match-team away" style="flex:1;font-weight:700;">' + teamName(m.away_team) + '</div>';
+    html += '<span class="score-team">' + teamName(m.home_team) + '</span>';
+    html += '<span class="score-num" style="font-size:1.8em;">' + m.home_score + '</span>';
+    html += '<span class="score-sep">-</span>';
+    html += '<span class="score-num" style="font-size:1.8em;">' + m.away_score + '</span>';
+    html += '<span class="score-team">' + teamName(m.away_team) + '</span>';
     html += '</div>';
 
     // Highlights YouTube link
