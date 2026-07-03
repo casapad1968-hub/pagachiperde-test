@@ -184,7 +184,7 @@
   <div class="header-links">
     <a href="#" onclick="event.preventDefault(); switchTab('partite',document.querySelector('.tab')); return false;">📋 Partite</a>
     <a href="#" onclick="event.preventDefault(); switchTab('classifica',document.querySelectorAll('.tab')[1]); return false;">🏆 Classifica</a>
-    <button id="loginBtn" class="login-btn" onclick="showLogin()">🔑 Accedi</button>
+    <button id="loginBtn" class="login-btn" style="display:none" onclick="showLogin()">🔑 Accedi</button>
     <button id="logoutBtn" class="logout-btn" style="display:none" onclick="logout()">🚪 Esci</button>
   </div>
 </div>
@@ -219,59 +219,32 @@
 </div>
 
 <script>
-let loggedIn = false;
-let currentUser = null;
-let matches = [];
+// === MOCK DATA per test stile ===
+let loggedIn = true;
+let currentUser = { id: 1, nome: 'Test', username: 'test' };
+let matches = [
+  { id: 89, phase: 'round_of_16', group_name: null, home_team: 'Canada', away_team: 'Marocco', match_date: '2026-07-04', home_score: null, away_score: null, is_played: 0, kickoff: '2026-07-04 19:00' },
+  { id: 90, phase: 'round_of_16', group_name: null, home_team: 'Paraguay', away_team: 'Francia', match_date: '2026-07-04', home_score: null, away_score: null, is_played: 0, kickoff: '2026-07-04 23:00' },
+  { id: 91, phase: 'round_of_16', group_name: null, home_team: 'Brasile', away_team: 'Norvegia', match_date: '2026-07-05', home_score: null, away_score: null, is_played: 0, kickoff: '2026-07-05 22:00' },
+  { id: 92, phase: 'round_of_16', group_name: null, home_team: 'Messico', away_team: 'Inghilterra', match_date: '2026-07-06', home_score: null, away_score: null, is_played: 0, kickoff: '2026-07-06 02:00' },
+  { id: 94, phase: 'round_of_16', group_name: null, home_team: 'Portogallo', away_team: 'Spagna', match_date: '2026-07-06', home_score: null, away_score: null, is_played: 0, kickoff: '2026-07-06 21:00' },
+  { id: 93, phase: 'round_of_16', group_name: null, home_team: 'Stati Uniti', away_team: 'Belgio', match_date: '2026-07-07', home_score: null, away_score: null, is_played: 0, kickoff: '2026-07-07 22:00' },
+  { id: 1, phase: 'group', group_name: 'A', home_team: 'Argentina', away_team: 'Capo Verde', match_date: '2026-07-03', home_score: 2, away_score: 0, is_played: 1, kickoff: '2026-07-03 19:00' },
+  { id: 2, phase: 'group', group_name: 'A', home_team: 'Colombia', away_team: 'Ghana', match_date: '2026-07-03', home_score: 1, away_score: 1, is_played: 1, kickoff: '2026-07-03 23:00' },
+];
 let allPredictions = {};
 let players = [];
 
-const auth = { user: null, pass: null, header: function() { return 'Basic ' + btoa(this.user + ':' + this.pass); } };
+const auth = { user: 'test', pass: 'test', header: function() { return 'Basic ' + btoa('test:test'); } };
 
-function showLogin() { document.getElementById('loginOverlay').classList.add('active'); }
-function hideLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
+function showLogin() {}
+function hideLogin() {}
 
-function doLogin() {
-  const user = document.getElementById('loginUser').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
-  if (!user || !pass) return;
-  auth.user = user; auth.pass = pass;
-  fetch('/api/me', { headers: { 'Authorization': auth.header() } })
-    .then(r => r.json())
-    .then(data => {
-      if (data.loggedIn) {
-        localStorage.setItem('pagachiperde_auth', JSON.stringify({u: user, p: pass}));
-        loggedIn = true; currentUser = data.user;
-        hideLogin();
-        document.getElementById('loginBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-        document.getElementById('infoBar').querySelector('.welcome').textContent = '👋 Benvenuto, ' + data.user.nome + '!';
-        loadData();
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-      }
-    })
-    .catch(() => {
-      document.getElementById('loginError').textContent = 'Errore di connessione';
-      document.getElementById('loginError').style.display = 'block';
-    });
-}
-
-function logout() {
-  loggedIn = false; currentUser = null; auth.user = null; auth.pass = null;
-  localStorage.removeItem('pagachiperde_auth');
-  document.getElementById('loginBtn').style.display = 'inline-block';
-  document.getElementById('logoutBtn').style.display = 'none';
-  document.getElementById('infoBar').querySelector('.welcome').textContent = '🌎 Pronostica le partite dei Mondiali 2026!';
-  document.getElementById('content').innerHTML = '<div class="loading">Effettua il login per vedere i contenuti</div>';
-}
-
-document.getElementById('loginUser').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginPass').focus(); });
-document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') hideLogin(); });
+function doLogin() {}
+function logout() {}
 
 let currentTab = 'partite';
 function switchTab(tab, el) {
-  if (!loggedIn) { showLogin(); return; }
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
@@ -288,20 +261,7 @@ function renderTab(tab) {
 }
 
 function loadData() {
-  if (!loggedIn) return;
-  fetch('/api/schedina', { headers: { 'Authorization': auth.header() } })
-    .then(r => r.json())
-    .then(data => {
-      matches = data;
-      return Promise.all(matches.map(m =>
-        fetch('/api/pronostici?match_id=' + m.id, { headers: { 'Authorization': auth.header() } })
-          .then(r => r.json())
-          .then(preds => { allPredictions[m.id] = preds; })
-      ));
-    })
-    .then(function() {
-            renderTab(currentTab);
-    });
+  renderTab(currentTab);
 }
 
 function formatDate(d) {
@@ -871,30 +831,14 @@ function submitWinner(team) {
   .catch(function() { s.innerHTML = '<div style="color:var(--red);text-align:center;padding:20px;">Errore di rete</div>'; });
 }
 
-// Auto-restore login
+// Auto-restore login (disabilitato per test)
 (function() {
-  const saved = localStorage.getItem('pagachiperde_auth');
-  if (saved) {
-    try {
-      const s = JSON.parse(saved);
-      if (!s.u || !s.p) return;
-      auth.user = s.u; auth.pass = s.p;
-      fetch('/api/me', { headers: { 'Authorization': auth.header() } })
-        .then(r => r.json())
-        .then(data => {
-          if (data.loggedIn) {
-            loggedIn = true; currentUser = data.user;
-            document.getElementById('loginBtn').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'inline-block';
-            document.getElementById('infoBar').querySelector('.welcome').textContent = '👋 Bentornato, ' + data.user.nome + '!';
-            loadData();
-          } else { localStorage.removeItem('pagachiperde_auth'); }
-        });
-    } catch(e) {}
-}
-
+  loadData();
+})();
 // Live score polling
 })();
+
+loadData();
 </script>
 </body>
 </html>
