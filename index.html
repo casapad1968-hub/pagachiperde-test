@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:image" content="https://pagachiperde.com/favicon.png">
+<title>Il circolo degli ex — Mondiali 2026</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #131a2e;
+    --surface2: #1b2640;
+    --border: #1e3050;
+    --gold: #f59e0b;
+    --gold-light: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --green: #4ade80;
+    --red: #f87171;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: url(/bg.jpg) center/cover fixed; color: var(--text); min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; position:relative; }
+  body::before { content:''; position:fixed; inset:0; z-index:-1; background: rgba(10,14,26,0.65); }
+  body::after { content:''; position:fixed; inset:0; z-index:-1; background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='40,0 77.3,20 77.3,60 40,80 2.7,60 2.7,20' fill='none' stroke='rgba(245,158,11,0.04)' stroke-width='0.5'/%3E%3C/svg%3E"); background-size:80px 80px; opacity:0.5; }
+  .header { background: rgba(10,14,26,0.85); backdrop-filter: blur(10px); border-bottom: 2px solid var(--gold); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:50; } padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .header h1 { font-size: 1.2em; color: var(--gold); font-weight: 800; letter-spacing: -0.5px; }
+  .header h1 small { color: var(--muted); font-weight: 400; font-size: 0.65em; display: block; }
+  .header-links { display: flex; gap: 6px; align-items: center; }
+  .header-links a, .header-links button { color: #94a3b8; text-decoration: none; padding: 5px 10px; border-radius: 6px; font-size: 0.8em; border: 1px solid var(--border); background: transparent; cursor: pointer; transition: all 0.15s; }
+  .header-links a:hover, .header-links button:hover { background: var(--surface2); color: var(--text); }
+  .login-btn { background: var(--gold) !important; color: #0a0e1a !important; border-color: var(--gold) !important; font-weight: 700; }
+  .logout-btn { background: transparent; border-color: var(--red); color: #fca5a5; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 14px; }
+
+  /* ============= LOGIN OVERLAY ============= */
+  .login-overlay { display: none; position: fixed; inset:0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index:100; justify-content:center; align-items:center; }
+  .login-overlay.active { display: flex; }
+  .login-box { background: var(--surface); padding: 36px 32px; border-radius: 20px; width: 90%; max-width: 360px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  .login-box h2 { text-align: center; margin-bottom: 24px; color: var(--gold); font-size: 1.4em; }
+  .login-box input { width:100%; padding:12px 14px; margin-bottom: 12px; border:1px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); font-size:1em; transition: border-color 0.2s; }
+  .login-box input:focus { outline: none; border-color: var(--gold); }
+  .login-box .error { color: #f87171; font-size: 0.85em; text-align:center; margin-bottom: 12px; display: none; }
+  .login-box button { width:100%; padding:12px; background:var(--gold); color:#0a0e1a; border:none; border-radius:10px; font-weight:700; font-size:1em; cursor:pointer; transition: transform 0.1s; }
+  .login-box button:active { transform: scale(0.98); }
+
+  /* ============= TABS ============= */
+  .tabs { display: flex; gap: 3px; margin-bottom: 14px; background: var(--surface); border-radius: 12px; padding: 3px; overflow-x: auto; }
+  .tab { flex:1; text-align:center; padding:10px; border-radius:9px; cursor:pointer; font-weight:600; color:var(--muted); font-size:0.85em; white-space:nowrap; transition:all 0.2s; }
+  .tab:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.03); }
+  .tab.active { background:var(--gold); color:#0a0e1a; box-shadow: 0 2px 15px rgba(245,158,11,0.4); }
+
+  /* ============= MATCH CARDS ============= */
+  .match-card { background: rgba(19,26,46,0.85); backdrop-filter: blur(6px); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; transition: all 0.25s; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  .match-card:hover { border-color: rgba(245,158,11,0.3); box-shadow: 0 4px 30px rgba(245,158,11,0.08), inset 0 0 20px rgba(245,158,11,0.02); }
+  .match-card:hover { border-color: #2a4070; }
+  .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .match-date { font-size: 0.78em; color: var(--muted); }
+  .match-gruppo { background: var(--surface2); padding: 2px 10px; border-radius: 20px; font-size: 0.72em; color: var(--muted); font-weight: 700; letter-spacing: 0.3px; }
+
+  .match-teams { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .match-team { display: flex; align-items: center; gap: 8px; flex:1; font-size: 1em; font-weight: 600; }
+  .match-team.away { justify-content: flex-end; text-align: right; }
+  .match-vs { color: var(--muted); font-size: 0.85em; font-weight: 600; }
+
+  .match-score { display: none; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; }
+  .match-score.show { display: flex; }
+  .match-score .score-num { font-size: 2em; font-weight: 900; color: var(--gold); }
+  .match-score .score-sep { color: var(--muted); font-weight: 700; font-size: 1.2em; }
+
+  .match-played-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(34,197,94,0.12); color: var(--green); padding: 3px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 600; }
+
+  /* Prediction form */
+  .prediction-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .prediction-form input { width: 48px; padding: 8px; text-align: center; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 1.05em; font-weight: 700; transition: border-color 0.2s; }
+  .prediction-form input:focus { outline: none; border-color: var(--gold); }
+  .prediction-form .vs { color: var(--muted); font-weight: 700; }
+  .prediction-form button { padding: 8px 18px; background: var(--gold); color: #0a0e1a; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9em; transition: all 0.15s; }
+  .prediction-form button:hover { background: var(--gold-light); }
+  .prediction-form button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .prediction-form .saved { color: var(--green); font-size: 0.85em; font-weight: 600; animation: fadeIn 0.3s; }
+  .prediction-form .my-pred-label { color: var(--green); font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Others' predictions */
+  .others-predictions { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .others-predictions .title { font-size: 0.75em; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .others-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .other-pred { display: inline-flex; align-items: center; gap: 4px; background: var(--surface2); padding: 3px 10px; border-radius: 20px; font-size: 0.78em; }
+  .other-pred .avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--gold); color: #0a0e1a; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: 800; }
+  .other-pred .name { color: #94a3b8; }
+  .other-pred .pred { color: var(--gold); font-weight: 700; }
+
+  /* ============= CLASSIFICA ============= */
+  .ranking-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+  .ranking-table th { text-align: left; padding: 12px 14px; background: var(--surface); color: var(--muted); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
+  .ranking-table td { padding: 12px 14px; border-bottom: 1px solid rgba(30,48,80,0.4); }
+  .ranking-table tr:last-child td { border-bottom: none; }
+  .ranking-table .pos { width: 36px; font-weight: 800; text-align: center; font-size: 1.1em; }
+  .rank-1 { background: linear-gradient(90deg, rgba(245,158,11,0.08), transparent); }
+  .rank-1 .pos { color: var(--gold); }
+  .rank-2 { background: linear-gradient(90deg, rgba(148,163,184,0.06), transparent); }
+  .rank-2 .pos { color: #94a3b8; }
+  .rank-3 { background: linear-gradient(90deg, rgba(205,127,50,0.06), transparent); }
+  .rank-3 .pos { color: #cd7f32; }
+  .rank-last { background: linear-gradient(90deg, rgba(239,68,68,0.06), transparent); }
+  .rank-last .pos { color: var(--red); }
+  .stat-info { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 16px; padding: 16px; background: rgba(19,26,46,0.7); backdrop-filter: blur(6px); border-radius: 12px; border: 1px solid var(--border); }
+
+  /* ============= INFOBAR ============= */
+  .info-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .info-bar .welcome { font-weight: 600; font-size: 0.9em; }
+  .info-bar .tg-link { color: #38bdf8; text-decoration: none; font-size: 0.82em; display: inline-flex; align-items: center; gap: 4px; }
+  .info-bar .tg-link:hover { text-decoration: underline; }
+
+  /* ============= DATE HEADER ============= */
+  .date-header { display: flex; align-items: center; gap: 10px; margin: 20px 0 10px; }
+  .date-header h3 { font-size: 1em; color: var(--gold); font-weight: 700; }
+  .date-header .line { flex:1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+  /* ============= LOADING ============= */
+  .loading { text-align: center; padding: 50px 20px; color: var(--muted); font-size: 0.95em; }
+  .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity:1; } 50% { opacity:0.3; } }
+
+  /* ============= MIEI PRONOSTICI ============= */
+  .my-pred-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
+  .my-pred-card .match-info { flex:1; }
+  .my-pred-card .match-info .teams { font-weight: 600; }
+  .my-pred-card .match-info .date { font-size: 0.78em; color: var(--muted); margin-top: 2px; }
+  .my-pred-card .pred-result { text-align: center; min-width: 80px; }
+  .my-pred-card .pred-result .label { font-size: 0.7em; color: var(--muted); text-transform: uppercase; }
+  .my-pred-card .pred-result .number { font-size: 1.3em; font-weight: 800; color: var(--gold); }
+  .my-pred-card .pred-result .actual { font-size: 1em; font-weight: 600; }
+  .my-pred-card .pred-result .actual.win { color: var(--green); }
+  .my-pred-card .pred-result .actual.lose { color: var(--red); }
+  .my-pred-card .pred-result .actual.partial { color: var(--gold); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1em; }
+    .header h1 small { display: inline; font-size: 0.6em; }
+    .tabs { font-size: 0.78em; }
+    .match-team { font-size: 0.9em; }
+    .match-score .score-num { font-size: 1.6em; }
+    .my-pred-card { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1><img src="stemma.png" alt="Circolo" style="height:42px;vertical-align:middle;margin-right:6px;"> Il circolo degli ex <small>🇺🇸🇲🇽🇨🇦 Mondiali 2026</small></h1>
+  </div>
+  <div class="header-links">
+    <a href="#" onclick="event.preventDefault(); switchTab('partite',document.querySelector('.tab')); return false;">📋 Partite</a>
+    <a href="#" onclick="event.preventDefault(); switchTab('classifica',document.querySelectorAll('.tab')[1]); return false;">🏆 Classifica</a>
+    <button id="loginBtn" class="login-btn" onclick="showLogin()">🔑 Accedi</button>
+    <button id="logoutBtn" class="logout-btn" style="display:none" onclick="logout()">🚪 Esci</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="info-bar" id="infoBar">
+    <div class="welcome">🌎 Pronostica le partite dei Mondiali 2026!</div>
+    <a class="tg-link" href="https://t.me/Chiperdepaga_bot" target="_blank">🤖 @Chiperdepaga_bot</a>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('partite',this)">📋 Partite</div>
+    <div class="tab" onclick="switchTab('classifica',this)">🏆 Classifica</div>
+    <div class="tab" onclick="switchTab('vincente',this)">🏆 VINCENTE</div>
+    <div class="tab" onclick="switchTab('miei',this)">🎯 I Miei</div>
+    <div class="tab" onclick="switchTab('risultati',this)">✅ Risultati</div>
+  </div>
+
+  <div id="content">
+    <div class="loading"><div class="spinner"></div>Caricamento</div>
+  </div>
+</div>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>🔑 Accedi</h2>
+    <div class="error" id="loginError">Username o password errati</div>
+    <input type="text" id="loginUser" placeholder="Username" autocomplete="username">
+    <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
+    <button onclick="doLogin()">Entra</button>
+  </div>
+</div>
+
+<script>
+let loggedIn = false;
+let currentUser = null;
+let matches = [];
+let allPredictions = {};
+let players = [];
+
+const auth = { user: null, pass: null, header: function() { return 'Basic ' + btoa(this.user + ':' + this.pass); } };
+
+function showLogin() { document.getElementById('loginOverlay').classList.add('active'); }
+function hideLogin() { document.getElementById('loginOverlay').classList.remove('active'); }
+
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!user || !pass) return;
+  auth.user = user; auth.pass = pass;
+  fetch('/api/me', { headers: { 'Authorization': auth.header() } })
+    .then(r => r.json())
+    .then(data => {
+      if (data.loggedIn) {
+        localStorage.setItem('pagachiperde_auth', JSON.stringify({u: user, p: pass}));
+        loggedIn = true; currentUser = data.user;
+        hideLogin();
+        document.getElementById('loginBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+        document.getElementById('infoBar').querySelector('.welcome').textContent = '👋 Benvenuto, ' + data.user.nome + '!';
+        loadData();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    })
+    .catch(() => {
+      document.getElementById('loginError').textContent = 'Errore di connessione';
+      document.getElementById('loginError').style.display = 'block';
+    });
+}
+
+function logout() {
+  loggedIn = false; currentUser = null; auth.user = null; auth.pass = null;
+  localStorage.removeItem('pagachiperde_auth');
+  document.getElementById('loginBtn').style.display = 'inline-block';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('infoBar').querySelector('.welcome').textContent = '🌎 Pronostica le partite dei Mondiali 2026!';
+  document.getElementById('content').innerHTML = '<div class="loading">Effettua il login per vedere i contenuti</div>';
+}
+
+document.getElementById('loginUser').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideLogin(); });
+
+let currentTab = 'partite';
+function switchTab(tab, el) {
+  if (!loggedIn) { showLogin(); return; }
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const c = document.getElementById('content');
+  if (tab === 'partite') renderPartite(c);
+  else if (tab === 'classifica') renderClassifica(c);
+  else if (tab === 'vincente') renderVincente(c);
+  else if (tab === 'miei') renderMiei(c);
+  else if (tab === 'risultati') renderRisultati(c);
+}
+
+function loadData() {
+  if (!loggedIn) return;
+  fetch('/api/schedina', { headers: { 'Authorization': auth.header() } })
+    .then(r => r.json())
+    .then(data => {
+      matches = data;
+      return Promise.all(matches.map(m =>
+        fetch('/api/pronostici?match_id=' + m.id, { headers: { 'Authorization': auth.header() } })
+          .then(r => r.json())
+          .then(preds => { allPredictions[m.id] = preds; })
+      ));
+    })
+    .then(function() {
+            renderTab(currentTab);
+    });
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date((d.length <= 10 ? d + "T00:00:00Z" : d.replace(" ", "T") + ":00Z"));
+  if (isNaN(date.getTime())) return d;
+  const giorni = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+  const mesi = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  return giorni[date.getUTCDay()] + ' ' + date.getUTCDate() + ' ' + mesi[date.getUTCMonth()] + (date.getUTCHours() ? ' · ' + date.getUTCHours().toString().padStart(2,'0') + ':' + date.getUTCMinutes().toString().padStart(2,'0') : '');
+}
+
+function getInitials(name) {
+  return name ? name.charAt(0).toUpperCase() : '?';
+}
+
+// Mappa bandiere nazioni
+var FLAG_MAP = {
+  'Messico':'🇲🇽','Sudafrica':'🇿🇦','Corea del Sud':'🇰🇷','Repubblica Ceca':'🇨🇿',
+  'Canada':'🇨🇦','Bosnia ed Erzegovina':'🇧🇦','Stati Uniti':'🇺🇸','Paraguay':'🇵🇾',
+  'Qatar':'🇶🇦','Svizzera':'🇨🇭','Brasile':'🇧🇷','Marocco':'🇲🇦','Haiti':'🇭🇹','Scozia':'🏴',
+  'Australia':'🇦🇺','Turchia':'🇹🇷','Germania':'🇩🇪','Curaçao':'🇨🇼','Paesi Bassi':'🇳🇱','Giappone':'🇯🇵',
+  "Costa d'Avorio":'🇨🇮','Ecuador':'🇪🇨','Svezia':'🇸🇪','Tunisia':'🇹🇳',
+  'Spagna':'🇪🇸','Capo Verde':'🇨🇻','Belgio':'🇧🇪','Egitto':'🇪🇬',
+  'Arabia Saudita':'🇸🇦','Uruguay':'🇺🇾','Iran':'🇮🇷','Nuova Zelanda':'🇳🇿',
+  'Francia':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norvegia':'🇳🇴','Argentina':'🇦🇷','Algeria':'🇩🇿',
+  'Austria':'🇦🇹','Giordania':'🇯🇴','Portogallo':'🇵🇹','RD Congo':'🇨🇩',
+  'Inghilterra':'🏴','Croazia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦','Uzbekistan':'🇺🇿','Colombia':'🇨🇴'
+};
+
+function teamName(n) {
+  if (!n) return '';
+  // Rimuovi eventuali bandiere già presenti
+  var clean = n.replace(/[\u{1F1E6}-\u{1F1FF}\u{1F3F4}\u{1F3FF}]/gu,'').replace(/🏴/g,'').trim();
+  return clean;
+}
+
+function flagOnly(n) {
+  if (!n) return '';
+  var clean = n.replace(/[\u{1F1E6}-\u{1F1FF}\u{1F3F4}\u{1F3FF}]/gu,'').replace(/🏴/g,'').trim();
+  return FLAG_MAP[clean] || '';
+}
+
+// ============= RENDER PARTITE =============
+function renderPartite(content) {
+  if (!matches.length) { content.innerHTML = '<div class="loading">Nessuna partita disponibile</div>'; return; }
+  
+  // Fetch live scores first, then render
+  fetch('/api/live-scores')
+    .then(function(r) { return r.json(); })
+    .then(function(liveData) {
+      renderPartiteWithLive(content, liveData);
+    })
+    .catch(function() {
+      renderPartiteWithLive(content, { live: [] });
+    });
+}
+
+function renderPartiteWithLive(content, liveData) {
+  var liveMatches = liveData.live || [];
+  
+  // Map ESPN English names to Italian
+  var nameMap = {
+    'Brazil': 'Brasile', 'Japan': 'Giappone', 'Germany': 'Germania',
+    'Spain': 'Spagna', 'England': 'Inghilterra', 'France': 'Francia',
+    'Italy': 'Italia', 'Portugal': 'Portogallo', 'Netherlands': 'Olanda',
+    'Argentina': 'Argentina', 'Mexico': 'Messico', 'United States': 'USA',
+    'Uruguay': 'Uruguay', 'Colombia': 'Colombia', 'Belgium': 'Belgio',
+    'Croatia': 'Croazia', 'Morocco': 'Marocco', 'Senegal': 'Senegal',
+    'South Korea': 'Corea del Sud', 'Korea Republic': 'Corea del Sud',
+    'Switzerland': 'Svizzera', 'Serbia': 'Serbia', 'Poland': 'Polonia',
+    'Sweden': 'Svezia', 'Denmark': 'Danimarca', 'Norway': 'Norvegia',
+    'Austria': 'Austria', 'Scotland': 'Scozia', 'Wales': 'Galles',
+    'Czech Republic': 'Rep. Ceca', 'Slovakia': 'Slovacchia',
+    'Hungary': 'Ungheria', 'Romania': 'Romania', 'Greece': 'Grecia',
+    'Turkey': 'Turchia', 'Ukraine': 'Ucraina', 'Russia': 'Russia',
+    'Egypt': 'Egitto', 'Nigeria': 'Nigeria', 'Ghana': 'Ghana',
+    'Cameroon': 'Camerun', 'Ivory Coast': "Costa d'Avorio",
+    "Côte d'Ivoire": "Costa d'Avorio", 'Tunisia': 'Tunisia',
+    'Algeria': 'Algeria', 'South Africa': 'Sudafrica',
+    'Saudi Arabia': 'Arabia Saudita', 'Iran': 'Iran',
+    'Australia': 'Australia', 'Canada': 'Canada',
+    'Costa Rica': 'Costa Rica', 'Panama': 'Panama',
+    'Chile': 'Cile', 'Peru': 'Perù', 'Ecuador': 'Ecuador',
+    'Paraguay': 'Paraguay', 'Venezuela': 'Venezuela',
+    'Bolivia': 'Bolivia', 'New Zealand': 'Nuova Zelanda',
+    'Qatar': 'Qatar', 'United Arab Emirates': 'EAU'
+  };
+  
+  // Build lookup by Italian team names
+  var liveByTeam = {};
+  liveMatches.forEach(function(lm) {
+    var homeIT = nameMap[lm.homeTeam] || lm.homeTeam;
+    var awayIT = nameMap[lm.awayTeam] || lm.awayTeam;
+    liveByTeam[homeIT + '|||' + awayIT] = lm;
+  });
+
+  if (!matches.length) { content.innerHTML = '<div class="loading">Nessuna partita disponibile</div>'; return; }
+
+  let html = '<div class="info-bar"><div>📋 <strong>' + matches.length + '</strong> partite</div><div>⏰ Pronostico entro inizio partita</div></div>';
+
+  let currentDate = '';
+  var filteredMatches = matches.filter(function(m) { return m.is_played !== 1; });
+  if (!filteredMatches.length) {
+    content.innerHTML = '<div class="info-bar"><div>⚽ Tutte le partite sono state giocate!</div></div><div style="text-align:center;color:var(--muted);padding:40px 20px;">✅ Vai nella sezione <strong>Risultati</strong> per vedere i pronostici e i punteggi finali.</div>';
+    return;
+  }
+  filteredMatches.forEach(m => {
+    const dateKey = m.match_date ? m.match_date.substring(0, 10) : '';
+    if (dateKey !== currentDate) {
+      currentDate = dateKey;
+      html += '<div class="date-header"><h3>📅 ' + formatDate(m.match_date) + '</h3><div class="line"></div></div>';
+    }
+
+    const myPred = allPredictions[m.id] ? allPredictions[m.id].find(p => p.player_name === currentUser?.nome) : null;
+    const othersPred = allPredictions[m.id] ? allPredictions[m.id].filter(p => p.player_name !== currentUser?.nome) : [];
+    const isPlayed = m.is_played === 1;
+    const isStarted = (function() {
+      var kickoffTime = m.kickoff ? new Date(m.kickoff.replace(' ', 'T') + ':00+02:00') : new Date(m.match_date);
+      var now = new Date(); var nowUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds())); return kickoffTime < nowUtc;
+    })();
+
+    html += '<div class="match-card" id="match-' + m.id + '">';
+    html += '<div class="match-header">';
+    html += '<span class="match-id" style="color:var(--muted);font-size:0.8em;font-weight:600;">#' + m.id + '</span>';
+    var faseLabel = m.phase === 'round_of_16' ? 'Ottavi' : (m.phase === 'round_of_32' ? 'Sedicesimi' : 'Girone ' + m.group_name);
+    html += '<span class="match-gruppo">' + faseLabel + '</span>';
+    html += '</div>';
+
+    // Orario italiano
+    if (m.kickoff) {
+      var kickoffDate = new Date(m.kickoff.replace(' ', 'T') + ':00+02:00');
+      var oraIta = kickoffDate.toLocaleString('it-IT', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', timeZone:'Europe/Rome'});
+      html += '<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 4px 0;padding:6px 12px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">';
+      html += '<span style="font-size:0.85em;color:#94a3b8;">📅</span>';
+      html += '<span style="font-size:0.9em;font-weight:700;color:#e2e8f0;">' + oraIta + '</span>';
+      html += '</div>';
+    }
+
+    if (isPlayed) {
+      html += '<div class="match-score show">';
+      html += '<div class="match-team" style="flex:1;font-weight:700;">' + teamName(m.home_team) + '</div>';
+      html += '<span class="score-num">' + m.home_score + '</span>';
+      html += '<span class="score-sep">-</span>';
+      html += '<span class="score-num">' + m.away_score + '</span>';
+      html += '<div class="match-team away" style="flex:1;font-weight:700;">' + teamName(m.away_team) + '</div>';
+      html += '</div>';
+      html += '<div><span class="match-played-badge">✅ Giocata</span></div>';
+      // Highlights YouTube link
+      var hlQuery = encodeURIComponent(m.home_team + ' ' + m.away_team + ' highlights mondiali 2026');
+      html += '<div style="text-align:center;margin-top:6px;">';
+      html += '<a href="https://www.youtube.com/results?search_query=' + hlQuery + '" target="_blank" style="font-size:0.78em;color:#fff;text-decoration:none;font-weight:600;background:#ff0000;padding:4px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;"><span style="font-size:1.1em;">▶</span> Highlights</a>';
+      html += '</div>';
+    } else {
+      html += '<div class="match-teams">';
+      html += '<div class="match-team">' + teamName(m.home_team) + '</div>';
+      html += '<div class="match-vs">VS</div>';
+      html += '<div class="match-team away">' + teamName(m.away_team) + '</div>';
+      html += '</div>';
+      if (isStarted) {
+        var liveQuery = encodeURIComponent(m.home_team + ' ' + m.away_team + ' mondiali 2026');
+        
+        // Check if we have live score data
+        var liveKey = m.home_team + '|||' + m.away_team;
+        var liveInfo = liveByTeam[liveKey];
+        var scoreText = liveInfo ? (liveInfo.homeScore + ' - ' + liveInfo.awayScore) : '-';
+        var minuteText = liveInfo ? (liveInfo.minute + ' · ' + liveInfo.period) : '';
+        
+        html += '<div class="live-score-box" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;padding:8px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;">';
+        html += '<span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;animation:pulse 1.2s infinite;box-shadow:0 0 8px rgba(239,68,68,0.6);"></span>';
+        html += '<span style="font-size:0.85em;font-weight:700;color:#fff;">IN CORSO</span>';
+        html += '<span class="live-score-num" style="font-size:1.1em;font-weight:800;color:#fbbf24;">' + scoreText + '</span>';
+        html += '<span class="live-minute" style="font-size:0.75em;color:#94a3b8;">' + minuteText + '</span>';
+        html += '<a href="https://www.google.com/search?q=' + liveQuery + '" target="_blank" style="font-size:0.82em;color:#fff;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#ef4444,#dc2626);padding:5px 14px;border-radius:8px;display:inline-flex;align-items:center;gap:4px;">🔴 LIVE</a>';
+        html += '</div>';
+      }
+    }
+
+    // Prediction form
+    if (!isPlayed && !(isStarted && m.match_date && m.match_date.length > 10)) {
+      html += '<div class="prediction-form">';
+      if (myPred) {
+        html += '<span class="my-pred-label">✔ ' + myPred.home_pred + '-' + myPred.away_pred + '</span>';
+      }
+      html += '<input type="number" min="0" max="20" value="' + (myPred ? myPred.home_pred : '') + '" placeholder="0" id="hp-' + m.id + '" style="width:48px">';
+      html += '<span class="vs">:</span>';
+      html += '<input type="number" min="0" max="20" value="' + (myPred ? myPred.away_pred : '') + '" placeholder="0" id="ap-' + m.id + '" style="width:48px">';
+      html += '<button onclick="submitPred(' + m.id + ')">' + (myPred ? '✏️ Modifica' : '⚡ Pronostica') + '</button>';
+      html += '<span id="saved-' + m.id + '" class="saved"></span>';
+      html += '</div>';
+    }
+
+    html += '</div>';
+  });
+
+  content.innerHTML = html;
+  
+  // Start live score polling (re-render every 30s)
+  if (window._livePoll) clearInterval(window._livePoll);
+  window._livePoll = setInterval(function() {
+    var tab = document.querySelector('.tab.active');
+    if (tab && tab.textContent.trim() === 'Partite') {
+      var content = document.getElementById('content');
+      renderPartite(content);
+    }
+  }, 30000);
+}
+
+function submitPred(matchId) {
+  const hp = parseInt(document.getElementById('hp-' + matchId).value);
+  const ap = parseInt(document.getElementById('ap-' + matchId).value);
+  if (isNaN(hp) || isNaN(ap) || hp < 0 || hp > 20 || ap < 0 || ap > 20) return;
+
+  const btn = document.querySelector('#match-' + matchId + ' button');
+  btn.disabled = true;
+  btn.textContent = '⏳ Salvando...';
+
+  fetch('/api/winner', { headers: { 'Authorization': auth.header() } })
+    .then(function(r) { return r.json(); })
+    .then(function(w) {
+      if (!w.prediction) {
+        alert('🏆 Prima devi scegliere la VINCENTE DEI MONDIALI!\nVai nella sezione "VINCENTE" e scegli la squadra che vincerà il torneo. Ti dà 10 punti extra!');
+        btn.textContent = '⚡ Pronostica';
+        btn.disabled = false;
+        switchTab('vincente', document.querySelectorAll('.tab')[2]);
+        return;
+      }
+      // Ok, ha scelto la vincente, può pronosticare
+      fetch('/api/pronostico', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': auth.header() },
+        body: JSON.stringify({ match_id: matchId, home_pred: hp, away_pred: ap })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          document.getElementById('saved-' + matchId).textContent = '✅ Salvato!';
+          btn.textContent = '✏️ Modifica';
+          btn.disabled = false;
+          setTimeout(() => { document.getElementById('saved-' + matchId).textContent = ''; }, 2500);
+          fetch('/api/pronostici?match_id=' + matchId, { headers: { 'Authorization': auth.header() } })
+            .then(r => r.json())
+            .then(preds => { allPredictions[matchId] = preds; renderTab(currentTab); });
+        } else {
+          alert('Errore: ' + (data.error || ''));
+          btn.textContent = 'Riprova';
+          btn.disabled = false;
+        }
+      })
+      .catch(() => { btn.textContent = 'Errore!'; btn.disabled = false; });
+    })
+    .catch(function() {
+      btn.textContent = '⚡ Pronostica';
+      btn.disabled = false;
+      alert('Errore di rete');
+    });
+}
+
+// ============= RENDER CLASSIFICA =============
+function renderClassifica(content) {
+  content.innerHTML = '<div class="loading"><div class="spinner"></div>Caricamento classifica</div>';
+  fetch('/api/classifica', { headers: { 'Authorization': auth.header() } })
+    .then(r => r.json())
+    .then(data => {
+      const c = data.classifica;
+      if (!c || !c.length) {
+        content.innerHTML = '<div class="info-bar"><div>Nessun pronostico ancora. Inizia a giocare! ⚽</div></div>';
+        return;
+      }
+      let html = '<div class="info-bar"><div>🏆 <strong>' + c.length + '</strong> giocatori</div><div>📊 ' + data.giocate + '/' + data.totali + ' partite giocate</div></div>';
+      html += '<table class="ranking-table"><thead><tr><th>#</th><th>Giocatore</th><th style="text-align:center">Pronostici</th><th style="text-align:center">🎯</th><th style="text-align:center">Punti</th></tr></thead><tbody>';
+      c.forEach((g, i) => {
+        const cls = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : i === c.length - 1 ? 'rank-last' : '';
+        const badge = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i === c.length - 1 ? '💸' : '';
+        const isMe = g.name === currentUser?.nome;
+        html += '<tr class="' + cls + '">';
+        html += '<td class="pos">' + (i+1) + '</td>';
+        html += '<td><strong>' + (isMe ? '👉 ' : '') + g.name + '</strong> ' + (badge ? '<span style="font-size:1.1em">' + badge + '</span>' : '') + '</td>';
+        html += '<td style="text-align:center;color:var(--muted)">' + (g.totPred || 0) + '</td>';
+        html += '<td style="text-align:center;color:var(--gold);font-weight:700">' + (g.es || 0) + '</td>';
+        
+        html += '<td style="text-align:center;font-weight:900;font-size:1.15em;color:' + (i === 0 ? 'var(--gold)' : i === c.length - 1 ? 'var(--red)' : 'var(--text)') + '">' + g.pt + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      if (c.length > 1) {
+        html += '<div class="stat-info">💸 <strong>' + c[c.length - 1].name + '</strong> è ultimo — paga 10€ a <strong>' + c[0].name + '</strong>! 🍻</div>';
+      }
+      content.innerHTML = html;
+    });
+}
+
+// ============= RENDER MIEI PRONOSTICI =============
+function renderMiei(content) {
+  if (!matches.length) { content.innerHTML = '<div class="loading"><div class="spinner"></div>Caricamento</div>'; return; }
+
+  let html = '<div class="info-bar"><div>🎯 I tuoi pronostici</div></div>';
+  let hasAny = false;
+
+  matches.forEach(m => {
+    const myPred = allPredictions[m.id] ? allPredictions[m.id].find(p => p.player_name === currentUser?.nome) : null;
+    if (!myPred) return;
+    hasAny = true;
+    const isPlayed = m.is_played === 1;
+    const isCorrect = isPlayed && m.home_score !== null && myPred.home_pred === m.home_score && myPred.away_pred === m.away_score;
+    const partial = isPlayed && m.home_score !== null && !isCorrect && (
+      (m.home_score > m.away_score && myPred.home_pred > myPred.away_pred) ||
+      (m.home_score < m.away_score && myPred.home_pred < myPred.away_pred) ||
+      (m.home_score === m.away_score && myPred.home_pred === myPred.away_pred)
+    );
+
+    html += '<div class="my-pred-card">';
+    html += '<div class="match-info">';
+    html += '<div class="teams">' + teamName(m.home_team) + ' vs ' + teamName(m.away_team) + '</div>';
+    html += '<div class="date">#' + m.id + ' · ' + formatDate(m.match_date) + '</div>';
+    html += '</div>';
+    html += '<div class="pred-result">';
+    html += '<div class="label">Il tuo pronostico</div>';
+    html += '<div style="display:flex;align-items:center;gap:6px;justify-content:center;">';
+    html += '<span class="number">' + myPred.home_pred + '</span><span style="color:var(--muted);font-weight:600;">:</span><span class="number">' + myPred.away_pred + '</span>';
+    if (isPlayed) {
+      html += '<span style="color:var(--muted);margin:0 4px;">→</span>';
+      html += '<div style="text-align:center;">';
+      html += '<div class="label">Risultato</div>';
+      html += '<span class="actual ' + (isCorrect ? 'win' : partial ? 'partial' : 'lose') + '">' + m.home_score + '-' + m.away_score + '</span>';
+      html += '</div>';
+    }
+    if (isCorrect) html += ' <span style="font-size:1.2em;">🔥</span>';
+    else if (partial) html += ' <span style="font-size:1.2em;">✅</span>';
+    html += '</div>';
+    html += '<div style="font-size:0.75em;margin-top:2px;font-weight:600;color:' + (isCorrect ? 'var(--green)' : partial ? 'var(--gold)' : 'var(--muted)') + '">' +
+      (isCorrect ? '+3 punti! 🎯 Esatto!' : partial ? '+1 punto (segno)' : isPlayed ? '0 punti ❌' : 'In attesa...') +
+    '</div>';
+    html += '</div>';
+    html += '</div>';
+  });
+
+  if (!hasAny) {
+    html += '<div class="info-bar"><div>Non hai ancora pronosticato! Vai su 📋 Partite e scegli i tuoi risultati.</div></div>';
+  }
+
+  content.innerHTML = html;
+}
+
+// ============= RENDER VINCENTE MONDIALI =============
+function renderVincente(content) {
+  var html = '<div class="info-bar" style="border-color:#f59e0b;">';
+  html += '<div>🏆 <strong>Vincente Mondiali 2026</strong></div>';
+  html += '<div style="color:var(--gold);font-weight:700;">+10 punti bonus!</div>';
+  html += '</div>';
+  
+  html += '<div style="background:linear-gradient(135deg,#1e3a5f,#0f1a2e);border:2px solid var(--gold);border-radius:14px;padding:20px;margin-bottom:16px;text-align:center;">';
+  html += '<div style="font-size:1.1em;font-weight:700;margin-bottom:8px;">🏆 Chi vincerà i Mondiali 2026?</div>';
+  html += '<div style="color:var(--muted);font-size:0.85em;">Scegli la squadra che secondo te vincerà il torneo.<br>Se azzecchi, guadagni <strong style="color:var(--gold);">10 PUNTI EXTRA</strong> in classifica!</div>';
+  html += '</div>';
+  
+  // Lista tutte le 48 squadre in ordine alfabetico
+  var teams = [
+    'Algeria','Arabia Saudita','Argentina','Australia','Austria','Belgio','Bosnia ed Erzegovina','Brasile',
+    'Canada','Capo Verde','Colombia','Corea del Sud','Costa d\u0027Avorio','Croazia','Curaçao','Ecuador',
+    'Egitto','Francia','Germania','Ghana','Giappone','Giordania','Haiti','Inghilterra','Iran','Iraq',
+    'Marocco','Messico','Norvegia','Nuova Zelanda','Paesi Bassi','Panama','Paraguay','Portogallo','Qatar',
+    'RD Congo','Repubblica Ceca','Scozia','Senegal','Spagna','Stati Uniti','Sudafrica','Svezia','Svizzera',
+    'Tunisia','Turchia','Uruguay','Uzbekistan'
+  ];
+  
+  html += '<div class="info-bar" style="margin-bottom:12px;"><div>Squadre partecipanti</div><div style="font-size:0.85em;color:var(--muted);">' + teams.length + ' nazionali</div></div>';
+  
+  // La scelta dell\u0027utente
+  html += '<div id="winner-section">';
+  html += '<div class="loading" id="winner-loading"><div class="spinner"></div>Caricamento</div>';
+  html += '</div>';
+  
+  content.innerHTML = html;
+  
+  // Carica scelta utente
+  fetch('/api/winner', { headers: { 'Authorization': auth.header() } })
+    .then(function(r) { return r.json(); })
+    .then(function(w) {
+      var myWinner = w.prediction;
+      var s = document.getElementById('winner-section');
+      if (!s) return;
+      
+      if (myWinner) {
+        var flag = FLAG_MAP[myWinner] || '';
+        s.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">' +
+          '<div style="font-size:0.85em;color:var(--muted);margin-bottom:6px;">La tua scelta</div>' +
+          '<div style="font-size:2em;font-weight:900;color:var(--gold);">' + flag + ' ' + myWinner + '</div>' +
+          '<div style="font-size:0.85em;color:var(--muted);margin-top:8px;">✅ Hai già scelto! '+ (flag?'🏆 ':'') +'</div>' +
+          '<button onclick="showWinnerSelector()" style="margin-top:12px;padding:8px 20px;background:var(--gold);color:#0a0e1a;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.9em;">✏️ Cambia scelta</button>' +
+          '</div>';
+      } else {
+        showWinnerSelector();
+      }
+      
+      // Carica anche le scelte degli altri
+      fetch('/api/winner-all', { headers: { 'Authorization': auth.header() } })
+        .then(function(r) { return r.json(); })
+        .then(function(all) {
+          if (all && all.length) {
+            var h = '<div class="others-predictions" style="margin-top:16px;"><div class="title">Scelte dei colleghi</div><div class="others-grid">';
+            all.forEach(function(p) {
+              var f = FLAG_MAP[p.winner] || '';
+              h += '<span class="other-pred"><span class="avatar">' + getInitials(p.player_name) + '</span> <span class="name">' + p.player_name + '</span> <span class="pred">' + f + ' ' + p.winner + '</span></span>';
+            });
+            h += '</div></div>';
+            document.getElementById('winner-section').innerHTML += h;
+          }
+        });
+    });
+}
+
+// ============= RENDER RISULTATI =============
+function renderRisultati(content) {
+  if (!matches.length) { content.innerHTML = '<div class="loading"><div class="spinner"></div>Caricamento</div>'; return; }
+
+  var played = matches.filter(function(m) { return m.is_played === 1; });
+  if (!played.length) {
+    content.innerHTML = '<div class="info-bar"><div>✅ Nessuna partita ancora conclusa</div></div><div style="text-align:center;color:var(--muted);padding:40px 20px;font-size:1.1em;">🏟️ Le prime partite iniziano stasera!<br>Tornerò qui quando i risultati saranno disponibili.</div>';
+    return;
+  }
+
+  var html = '<div class="info-bar"><div>✅ <strong>' + played.length + '</strong> partite concluse</div></div>';
+
+  played.slice().reverse().forEach(function(m) {
+    var myPred = allPredictions[m.id] ? allPredictions[m.id].find(function(p) { return p.player_name === currentUser?.nome; }) : null;
+    var othersPred = allPredictions[m.id] ? allPredictions[m.id].filter(function(p) { return p.player_name !== currentUser?.nome; }) : [];
+
+    html += '<div class="match-card" style="border:1px solid rgba(34,197,94,0.3);">';
+    html += '<div class="match-header">';
+    html += '<span class="match-id" style="color:var(--muted);font-size:0.8em;font-weight:600;">#' + m.id + '</span>';
+    html += '<span class="match-gruppo" style="background:rgba(34,197,94,0.15);color:var(--green);">✅ Giocata</span>';
+    html += '</div>';
+
+    // Risultato finale
+    html += '<div class="match-score show" style="margin-bottom:4px;">';
+    html += '<div class="match-team" style="flex:1;font-weight:700;">' + teamName(m.home_team) + '</div>';
+    html += '<span class="score-num" style="font-size:2.4em;">' + m.home_score + '</span>';
+    html += '<span class="score-sep" style="font-size:1.4em;">-</span>';
+    html += '<span class="score-num" style="font-size:2.4em;">' + m.away_score + '</span>';
+    html += '<div class="match-team away" style="flex:1;font-weight:700;">' + teamName(m.away_team) + '</div>';
+    html += '</div>';
+
+    // Highlights YouTube link
+    var hlQuery2 = encodeURIComponent(m.home_team + ' ' + m.away_team + ' highlights mondiali 2026');
+    html += '<div style="text-align:center;margin:4px 0 8px 0;">';
+    html += '<a href="https://www.youtube.com/results?search_query=' + hlQuery2 + '" target="_blank" style="font-size:0.78em;color:#fff;text-decoration:none;font-weight:600;background:#ff0000;padding:4px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;"><span style="font-size:1.1em;">▶</span> Highlights</a>';
+    html += '</div>';
+
+    // Riepilogo pronostici
+    html += '<div class="others-predictions" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px;">';
+    html += '<div class="title">🎯 Pronostici dei giocatori</div>';
+    html += '<div class="others-grid">';
+
+    if (myPred) {
+      var isCorrect = m.home_score !== null && myPred.home_pred === m.home_score && myPred.away_pred === m.away_score;
+      var partial = m.home_score !== null && !isCorrect && (
+        (m.home_score > m.away_score && myPred.home_pred > myPred.away_pred) ||
+        (m.home_score < m.away_score && myPred.home_pred < myPred.away_pred) ||
+        (m.home_score === m.away_score && myPred.home_pred === myPred.away_pred)
+      );
+      html += '<div class="other-pred" style="background:rgba(34,197,94,0.1);border:1px solid ' + (isCorrect ? 'var(--green)' : partial ? 'var(--gold)' : 'var(--red)') + ';">';
+      html += '<span class="avatar" style="background:' + (isCorrect ? 'var(--green)' : partial ? 'var(--gold)' : 'var(--red)') + ';">' + getInitials(currentUser.nome) + '</span>';
+      html += '<span class="name" style="font-weight:600;">' + currentUser.nome + '</span>';
+      html += '<span class="pred">' + myPred.home_pred + '-' + myPred.away_pred + '</span>';
+      if (isCorrect) html += '<span style="font-size:0.7em;">🔥</span>';
+      else if (partial) html += '<span style="font-size:0.7em;">⚡</span>';
+      else html += '<span style="font-size:0.7em;">❌</span>';
+      html += '</div>';
+    }
+
+    othersPred.forEach(function(p) {
+      var isCorrect = m.home_score !== null && p.home_pred === m.home_score && p.away_pred === m.away_score;
+      var partial = m.home_score !== null && !isCorrect && (
+        (m.home_score > m.away_score && p.home_pred > p.away_pred) ||
+        (m.home_score < m.away_score && p.home_pred < p.away_pred) ||
+        (m.home_score === m.away_score && p.home_pred === p.away_pred)
+      );
+      var statusIcon = isCorrect ? '🔥' : partial ? '⚡' : '❌';
+      var statusColor = isCorrect ? 'var(--green)' : partial ? 'var(--gold)' : 'var(--red)';
+      html += '<div class="other-pred" style="border:1px solid ' + statusColor + ';">';
+      html += '<span class="avatar" style="background:' + statusColor + ';">' + getInitials(p.player_name) + '</span>';
+      html += '<span class="name">' + p.player_name + '</span>';
+      html += '<span class="pred">' + p.home_pred + '-' + p.away_pred + '</span>';
+      html += '<span style="font-size:0.7em;">' + statusIcon + '</span>';
+      html += '</div>';
+    });
+
+    html += '</div></div>'; // chiudi others-grid e others-predictions
+    html += '</div>'; // chiudi match-card
+  });
+
+  content.innerHTML = html;
+}
+
+function showWinnerSelector() {
+  var teams = [
+    'Algeria','Arabia Saudita','Argentina','Australia','Austria','Belgio','Bosnia ed Erzegovina','Brasile',
+    'Canada','Capo Verde','Colombia','Corea del Sud',"Costa d\u0027Avorio",'Croazia','Curaçao','Ecuador',
+    'Egitto','Francia','Germania','Ghana','Giappone','Giordania','Haiti','Inghilterra','Iran','Iraq',
+    'Marocco','Messico','Norvegia','Nuova Zelanda','Paesi Bassi','Panama','Paraguay','Portogallo','Qatar',
+    'RD Congo','Repubblica Ceca','Scozia','Senegal','Spagna','Stati Uniti','Sudafrica','Svezia','Svizzera',
+    'Tunisia','Turchia','Uruguay','Uzbekistan'
+  ];
+  
+  var s = document.getElementById('winner-section');
+  if (!s) return;
+  
+  var h = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;">';
+  h += '<div style="margin-bottom:10px;font-weight:600;color:var(--gold);">🔍 Seleziona la squadra vincente:</div>';
+  h += '<div style="display:flex;flex-wrap:wrap;gap:6px;max-height:400px;overflow-y:auto;padding:4px;">';
+  teams.forEach(function(t) {
+    var f = FLAG_MAP[t] || '';
+    h += '<button onclick="submitWinner(\u0027' + t.replace(/'/g,"\\'") + '\u0027)" style="flex:1 0 calc(50% - 6px);min-width:120px;padding:10px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:0.9em;text-align:left;transition:all 0.15s;" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'#1e3050\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'var(--surface2)\'">' + f + ' ' + t + '</button>';
+  });
+  h += '</div></div>';
+  s.innerHTML = h;
+}
+
+function submitWinner(team) {
+  var s = document.getElementById('winner-section');
+  s.innerHTML = '<div class="loading"><div class="spinner"></div>Salvataggio...</div>';
+  
+  fetch('/api/winner', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': auth.header() },
+    body: JSON.stringify({ team: team })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.ok) {
+      var flag = FLAG_MAP[team] || '';
+      s.innerHTML = '<div style="background:var(--surface);border:1px solid var(--green);border-radius:14px;padding:20px;text-align:center;">' +
+        '<div style="font-size:3em;margin-bottom:8px;">🏆</div>' +
+        '<div style="font-size:1.3em;font-weight:700;color:var(--gold);">' + flag + ' ' + team + '</div>' +
+        '<div style="font-size:0.95em;color:var(--green);margin-top:8px;">✅ Scelta salvata! +10 punti se vince!</div>' +
+        '</div>';
+      // Aggiorna classifica
+      setTimeout(function() { switchTab('vincente', document.querySelectorAll('.tab')[2]); }, 2000);
+    } else {
+      s.innerHTML = '<div style="color:var(--red);text-align:center;padding:20px;">Errore: ' + (data.error || '') + '</div>';
+    }
+  })
+  .catch(function() { s.innerHTML = '<div style="color:var(--red);text-align:center;padding:20px;">Errore di rete</div>'; });
+}
+
+// Auto-restore login
+(function() {
+  const saved = localStorage.getItem('pagachiperde_auth');
+  if (saved) {
+    try {
+      const s = JSON.parse(saved);
+      if (!s.u || !s.p) return;
+      auth.user = s.u; auth.pass = s.p;
+      fetch('/api/me', { headers: { 'Authorization': auth.header() } })
+        .then(r => r.json())
+        .then(data => {
+          if (data.loggedIn) {
+            loggedIn = true; currentUser = data.user;
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+            document.getElementById('infoBar').querySelector('.welcome').textContent = '👋 Bentornato, ' + data.user.nome + '!';
+            loadData();
+          } else { localStorage.removeItem('pagachiperde_auth'); }
+        });
+    } catch(e) {}
+}
+
+// Live score polling
+})();
+</script>
+</body>
+</html>
