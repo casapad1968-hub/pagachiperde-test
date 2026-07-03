@@ -307,16 +307,7 @@ function flagOnly(n) {
 // ============= RENDER PARTITE =============
 function renderPartite(content) {
   if (!matches.length) { content.innerHTML = '<div class="loading">Nessuna partita disponibile</div>'; return; }
-  
-  // Fetch live scores first, then render
-  fetch('/api/live-scores')
-    .then(function(r) { return r.json(); })
-    .then(function(liveData) {
-      renderPartiteWithLive(content, liveData);
-    })
-    .catch(function() {
-      renderPartiteWithLive(content, { live: [] });
-    });
+  renderPartiteWithLive(content, { live: [] });
 }
 
 function renderPartiteWithLive(content, liveData) {
@@ -545,36 +536,33 @@ function submitPred(matchId) {
 
 // ============= RENDER CLASSIFICA =============
 function renderClassifica(content) {
-  content.innerHTML = '<div class="loading"><div class="spinner"></div>Caricamento classifica</div>';
-  fetch('/api/classifica', { headers: { 'Authorization': auth.header() } })
-    .then(r => r.json())
-    .then(data => {
-      const c = data.classifica;
-      if (!c || !c.length) {
-        content.innerHTML = '<div class="info-bar"><div>Nessun pronostico ancora. Inizia a giocare! ⚽</div></div>';
-        return;
-      }
-      let html = '<div class="info-bar"><div>🏆 <strong>' + c.length + '</strong> giocatori</div><div>📊 ' + data.giocate + '/' + data.totali + ' partite giocate</div></div>';
-      html += '<table class="ranking-table"><thead><tr><th>#</th><th>Giocatore</th><th style="text-align:center">Pronostici</th><th style="text-align:center">🎯</th><th style="text-align:center">Punti</th></tr></thead><tbody>';
-      c.forEach((g, i) => {
-        const cls = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : i === c.length - 1 ? 'rank-last' : '';
-        const badge = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i === c.length - 1 ? '💸' : '';
-        const isMe = g.name === currentUser?.nome;
-        html += '<tr class="' + cls + '">';
-        html += '<td class="pos">' + (i+1) + '</td>';
-        html += '<td><strong>' + (isMe ? '👉 ' : '') + g.name + '</strong> ' + (badge ? '<span style="font-size:1.1em">' + badge + '</span>' : '') + '</td>';
-        html += '<td style="text-align:center;color:var(--muted)">' + (g.totPred || 0) + '</td>';
-        html += '<td style="text-align:center;color:var(--gold);font-weight:700">' + (g.es || 0) + '</td>';
-        
-        html += '<td style="text-align:center;font-weight:900;font-size:1.15em;color:' + (i === 0 ? 'var(--gold)' : i === c.length - 1 ? 'var(--red)' : 'var(--text)') + '">' + g.pt + '</td>';
-        html += '</tr>';
-      });
-      html += '</tbody></table>';
-      if (c.length > 1) {
-        html += '<div class="stat-info">💸 <strong>' + c[c.length - 1].name + '</strong> è ultimo — paga 10€ a <strong>' + c[0].name + '</strong>! 🍻</div>';
-      }
-      content.innerHTML = html;
-    });
+  var mockClassifica = [
+    { name: 'Gaetano', pt: 12, es: 2, totPred: 8 },
+    { name: 'DavideB', pt: 10, es: 1, totPred: 7 },
+    { name: 'Pietro', pt: 8, es: 1, totPred: 6 },
+    { name: 'Ciro', pt: 6, es: 0, totPred: 5 },
+    { name: 'DavideF', pt: 4, es: 0, totPred: 4 }
+  ];
+  var c = mockClassifica;
+  let html = '<div class="info-bar"><div>🏆 <strong>' + c.length + '</strong> giocatori</div><div>📊 2/8 partite giocate</div></div>';
+  html += '<table class="ranking-table"><thead><tr><th>#</th><th>Giocatore</th><th style="text-align:center">Pronostici</th><th style="text-align:center">🎯</th><th style="text-align:center">Punti</th></tr></thead><tbody>';
+  c.forEach((g, i) => {
+    const cls = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : i === c.length - 1 ? 'rank-last' : '';
+    const badge = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i === c.length - 1 ? '💸' : '';
+    const isMe = g.name === currentUser?.nome;
+    html += '<tr class="' + cls + '">';
+    html += '<td class="pos">' + (i+1) + '</td>';
+    html += '<td><strong>' + (isMe ? '👉 ' : '') + g.name + '</strong> ' + (badge ? '<span style="font-size:1.1em">' + badge + '</span>' : '') + '</td>';
+    html += '<td style="text-align:center;color:var(--muted)">' + (g.totPred || 0) + '</td>';
+    html += '<td style="text-align:center;color:var(--gold);font-weight:700">' + (g.es || 0) + '</td>';
+    html += '<td style="text-align:center;font-weight:900;font-size:1.15em;color:' + (i === 0 ? 'var(--gold)' : i === c.length - 1 ? 'var(--red)' : 'var(--text)') + '">' + g.pt + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  if (c.length > 1) {
+    html += '<div class="stat-info">💸 <strong>' + c[c.length - 1].name + '</strong> è ultimo — paga 10€ a <strong>' + c[0].name + '</strong>! 🍻</div>';
+  }
+  content.innerHTML = html;
 }
 
 // ============= RENDER MIEI PRONOSTICI =============
